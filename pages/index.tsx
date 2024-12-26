@@ -1,20 +1,11 @@
 import { useState } from "react";
 import React from "react";
-import { useRouter } from "next/router";
 import styles from "../styles/Home.module.css";
-import config from '../config';
-import StateManager from '../utils/stateManager';
-
-// Create a type for storing advice globally
-declare global {
-  interface Window {
-    __FINANCIAL_ADVICE__?: string[];
-  }
-}
 
 export default function Home() {
-  const router = useRouter();
   const [currentStep, setCurrentStep] = useState(0);
+  const [advice, setAdvice] = useState<string[]>([]);
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     age: "",
     income: "",
@@ -101,6 +92,7 @@ export default function Home() {
     e.preventDefault();
     if (!validateForm()) return;
     setError("");
+    setLoading(true);
 
     try {
       const response = await fetch(`/api/getAdvice`, {
@@ -119,13 +111,61 @@ export default function Home() {
         throw new Error('Invalid response format');
       }
 
-      StateManager.setAdvice(data.advice);
-      router.push('/results');
+      setAdvice(data.advice);
+      setCurrentStep(questions.length + 1); // Move to results display
     } catch (error) {
       console.error("Error:", error);
       setError(error.message || "Failed to get advice. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
+
+  const resetQuiz = () => {
+    setCurrentStep(0);
+    setAdvice([]);
+    setFormData({
+      age: "",
+      income: "",
+      savings: "",
+      debt: "",
+      expenses: "",
+      investmentRisk: "",
+      financialGoals: "",
+      dependents: "",
+    });
+    setError("");
+  };
+
+  if (loading) {
+    return (
+      <div className={styles.container}>
+        <h1>Analyzing your financial data...</h1>
+        <div className={styles.progressBar}>
+          <div className={styles.progressFill} style={{ width: '50%' }} />
+        </div>
+      </div>
+    );
+  }
+
+  if (currentStep > questions.length) {
+    return (
+      <div className={styles.container}>
+        <h1>Your Personalized Financial Advice</h1>
+        <div className={styles.adviceContainer}>
+          {advice.map((item, index) => (
+            <div key={index} className={styles.adviceCard}>
+              <h3>Recommendation {index + 1}</h3>
+              <p>{item}</p>
+            </div>
+          ))}
+        </div>
+        <button onClick={resetQuiz} className={styles.button}>
+          Take Quiz Again
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.container}>
@@ -143,19 +183,21 @@ export default function Home() {
             className={styles.input}
           />
           {error && <p className={styles.error}>{error}</p>}
-          <button
-            onClick={handleNext}
-            className={styles.button}
-            disabled={!validateInput(formData[questions[currentStep].key])}
-          >
-            Next
-          </button>
+          {currentStep < questions.length - 1 ? (
+            <button
+              onClick={handleNext}
+              className={styles.button}
+              disabled={!validateInput(formData[questions[currentStep].key])}
+            >
+              Next
+            </button>
+          ) : (
+            <button onClick={handleSubmit} className={styles.submitButton}>
+              Get Financial Advice
+            </button>
+          )}
         </div>
-      ) : (
-        <button onClick={handleSubmit} className={styles.submitButton}>
-          Get Financial Advice
-        </button>
-      )}
+      ) : null}
     </div>
   );
 }
