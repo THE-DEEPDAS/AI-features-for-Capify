@@ -1,5 +1,9 @@
 {
   "version": 2,
+  "buildCommand": "npm run build",
+  "devCommand": "npm run dev",
+  "installCommand": "npm install",
+  "outputDirectory": ".next",
   "builds": [
     {
       "src": "package.json",
@@ -10,17 +14,12 @@
       "use": "@vercel/python"
     }
   ],
-  "functions": {
-    "api/getAdvice.ts": {
-      "runtime": "nodejs18.x",
-      "memory": 1024,
-      "maxDuration": 10
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/"
     }
-  },
-  "buildCommand": "pip install -r requirements.txt --target pythonenv && npm run build",
-  "installCommand": "npm install",
-  "framework": "nextjs",
-  "outputDirectory": ".next",
+  ],
   "env": {
     "PYTHONPATH": "/var/task/pythonenv:/var/lang/lib/python3.9/site-packages"
   }
