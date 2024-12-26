@@ -48,14 +48,18 @@ export default function Home() {
   ];
 
   const validateForm = () => {
-    for (const key in formData) {
-      if (!formData[key] || formData[key].trim() === '') {
-        setError(`Please fill in all fields before proceeding`);
+    const requiredFields = ['age', 'income', 'savings', 'debt', 'expenses', 'investmentRisk', 'dependents'];
+    
+    for (const field of requiredFields) {
+      const value = formData[field];
+      if (!value || value.toString().trim() === '') {
+        setError(`Please fill in ${field}`);
         return false;
       }
-      const value = parseFloat(formData[key]);
-      if (isNaN(value)) {
-        setError(`Please enter valid numbers`);
+      
+      const numValue = parseFloat(value);
+      if (isNaN(numValue) || numValue < 0) {
+        setError(`Please enter a valid number for ${field}`);
         return false;
       }
     }
@@ -92,14 +96,27 @@ export default function Home() {
 
   const handleSubmit = async (e: React.MouseEvent) => {
     e.preventDefault();
-    if (!validateForm()) return;
+    
+    if (!validateForm()) {
+      return;
+    }
+    
     setLoading(true);
+    setError("");
 
     try {
       const response = await fetch("/api/getAdvice", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData)
+        body: JSON.stringify({
+          age: parseFloat(formData.age),
+          income: parseFloat(formData.income),
+          savings: parseFloat(formData.savings),
+          debt: parseFloat(formData.debt),
+          expenses: parseFloat(formData.expenses),
+          investmentRisk: parseFloat(formData.investmentRisk),
+          dependents: parseFloat(formData.dependents),
+        })
       });
 
       if (!response.ok) {
@@ -112,11 +129,8 @@ export default function Home() {
         throw new Error('Invalid response format');
       }
 
-      // Store the advice in sessionStorage
       sessionStorage.setItem('financialAdvice', JSON.stringify(result.advice));
-      
-      // Use router.replace instead of push to avoid adding to history
-      router.replace('/results', undefined, { shallow: true });
+      router.push('/results');
     } catch (error) {
       setError("Failed to get advice. Please try again.");
       console.error("Error:", error);
