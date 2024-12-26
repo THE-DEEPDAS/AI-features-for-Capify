@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { PythonShell } from 'python-shell';
+import { PythonShell, Options } from 'python-shell';
 import path from 'path';
 
 export default async function handler(
@@ -13,21 +13,25 @@ export default async function handler(
   try {
     const userData = req.body;
     
-    const options = {
-      mode: "text" as "text",
+    const options: Options = {
+      mode: "text",
       pythonPath: process.env.VERCEL ? '/var/lang/bin/python3' : 'python',
       pythonOptions: ['-u'],
       scriptPath: path.join(process.cwd(), 'ml'),
       args: [JSON.stringify(userData)]
     };
 
-    const results: string[] = await new Promise((resolve, reject) => {
-      PythonShell.run('financial_model.py', options, (err, results) => {
-        if (err) reject(err);
-        else resolve(results);
-      });
-    });
+    const results = await PythonShell.run('financial_model.py', options);
+    
+    if (!results || !Array.isArray(results) || results.length === 0) {
+      throw new Error('No results returned from Python script');
+    }
+
     const lastResult = results[results.length - 1];
+    if (!lastResult) {
+      throw new Error('Invalid result format');
+    }
+
     const advice = JSON.parse(lastResult);
 
     if (!Array.isArray(advice)) {
