@@ -1,26 +1,28 @@
 {
   "version": 2,
-  "buildCommand": "npm run build",
-  "devCommand": "npm run dev",
-  "installCommand": "npm install",
-  "outputDirectory": ".next",
+  "framework": "nextjs",
   "builds": [
     {
       "src": "package.json",
       "use": "@vercel/next"
     },
     {
-      "src": "ml/financial_model.py",
-      "use": "@vercel/python"
+      "src": "ml/**/*.py",
+      "use": "@vercel/python",
+      "config": {
+        "maxLambdaSize": "15mb",
+        "runtime": "python3.9"
+      }
     }
   ],
   "routes": [
     {
+      "src": "/api/(.*)",
+      "dest": "/api/$1"
+    },
+    {
       "src": "/(.*)",
-      "dest": "/"
+      "dest": "/$1"
     }
-  ],
-  "env": {
-    "PYTHONPATH": "/var/task/pythonenv:/var/lang/lib/python3.9/site-packages"
-  }
+  ]
 }
