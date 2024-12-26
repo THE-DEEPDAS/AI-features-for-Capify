@@ -1,8 +1,10 @@
 import { useState } from "react";
+import { useRouter } from "next/router";
 import React from "react";
 import styles from "../styles/Home.module.css";
 
 export default function Home() {
+  const router = useRouter();
   const [currentStep, setCurrentStep] = useState(0);
   const [advice, setAdvice] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
@@ -91,67 +93,55 @@ export default function Home() {
   const handleSubmit = async (e: React.MouseEvent) => {
     e.preventDefault();
     if (!validateForm()) return;
-    setError("");
     setLoading(true);
 
     try {
-      const response = await fetch(`/api/getAdvice`, {
+      const response = await fetch("/api/getAdvice", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(formData)
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to get advice');
+        throw new Error('Failed to get financial advice');
       }
 
-      const data = await response.json();
-      if (!data.advice || !Array.isArray(data.advice)) {
+      const result = await response.json();
+      
+      if (!result.advice || !Array.isArray(result.advice)) {
         throw new Error('Invalid response format');
       }
 
-      setAdvice(data.advice);
-      setCurrentStep(questions.length + 1); // Move to results display
+      // Store the advice in sessionStorage
+      sessionStorage.setItem('financialAdvice', JSON.stringify(result.advice));
+      
+      // Use router.replace instead of push to avoid adding to history
+      router.replace('/results', undefined, { shallow: true });
     } catch (error) {
+      setError("Failed to get advice. Please try again.");
       console.error("Error:", error);
-      setError(error.message || "Failed to get advice. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
-  const resetQuiz = () => {
-    setCurrentStep(0);
-    setAdvice([]);
-    setFormData({
-      age: "",
-      income: "",
-      savings: "",
-      debt: "",
-      expenses: "",
-      investmentRisk: "",
-      financialGoals: "",
-      dependents: "",
-    });
-    setError("");
-  };
-
+  // Show loading state
   if (loading) {
     return (
       <div className={styles.container}>
-        <h1>Analyzing your financial data...</h1>
+        <h1>Analyzing your financial situation...</h1>
         <div className={styles.progressBar}>
-          <div className={styles.progressFill} style={{ width: '50%' }} />
+          <div className={styles.progressFill} style={{ width: '80%' }} />
         </div>
       </div>
     );
   }
 
-  if (currentStep > questions.length) {
+  // Show results
+  if (currentStep > questions.length && advice.length > 0) {
     return (
       <div className={styles.container}>
-        <h1>Your Personalized Financial Advice</h1>
+        <h1>Your Financial Recommendations</h1>
         <div className={styles.adviceContainer}>
           {advice.map((item, index) => (
             <div key={index} className={styles.adviceCard}>
@@ -160,13 +150,11 @@ export default function Home() {
             </div>
           ))}
         </div>
-        <button onClick={resetQuiz} className={styles.button}>
-          Take Quiz Again
-        </button>
       </div>
     );
   }
 
+  // Show quiz
   return (
     <div className={styles.container}>
       <h1>Financial Advisory Quiz</h1>
