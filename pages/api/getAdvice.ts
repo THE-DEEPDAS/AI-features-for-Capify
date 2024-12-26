@@ -21,13 +21,7 @@ export default async function handler(
       args: [JSON.stringify(userData)]
     };
 
-    const results = await new Promise<string[]>((resolve, reject) => {
-      PythonShell.run('financial_model.py', options, (err, output) => {
-        if (err) reject(err);
-        resolve(output || []);
-      });
-    });
-
+    const results = await PythonShell.run('financial_model.py', options);
     const lastResult = results[results.length - 1];
     const advice = JSON.parse(lastResult);
 
