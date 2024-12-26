@@ -1,16 +1,25 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { PythonShell } from 'python-shell';
 import path from 'path';
+import config from '../../config';
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+  // Handle CORS
+  res.setHeader('Access-Control-Allow-Origin', config.baseUrl);
+  res.setHeader('Access-Control-Allow-Methods', 'POST');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
   if (req.method !== 'POST') {
     return res.status(405).json({ message: 'Method not allowed' });
   }
 
   try {
+    // Add a small delay to ensure proper state transitions
+    await new Promise(resolve => setTimeout(resolve, 500));
+
     const userData = req.body;
     
     // Validate data before sending to Python

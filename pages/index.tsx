@@ -2,6 +2,8 @@ import { useState } from "react";
 import React from "react";
 import { useRouter } from "next/router";
 import styles from "../styles/Home.module.css";
+import config from '../config';
+import StateManager from '../utils/stateManager';
 
 // Create a type for storing advice globally
 declare global {
@@ -98,30 +100,30 @@ export default function Home() {
   const handleSubmit = async (e: React.MouseEvent) => {
     e.preventDefault();
     if (!validateForm()) return;
+    setError("");
 
     try {
-      const response = await fetch("/api/getAdvice", {
+      const response = await fetch(`/api/getAdvice`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
 
       if (!response.ok) {
-        throw new Error('Failed to get advice');
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to get advice');
       }
 
       const data = await response.json();
-      if (!data.advice) {
-        throw new Error('No advice received');
+      if (!data.advice || !Array.isArray(data.advice)) {
+        throw new Error('Invalid response format');
       }
 
-      router.push({
-        pathname: "/results",
-        query: { advice: JSON.stringify(data.advice) }
-      });
+      StateManager.setAdvice(data.advice);
+      router.push('/results');
     } catch (error) {
       console.error("Error:", error);
-      setError("Failed to get advice. Please try again.");
+      setError(error.message || "Failed to get advice. Please try again.");
     }
   };
 
