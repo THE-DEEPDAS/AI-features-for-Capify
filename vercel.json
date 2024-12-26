@@ -24,5 +24,14 @@
       "src": "/(.*)",
       "dest": "/$1"
     }
-  ]
+  ],
+  "buildCommand": "npm run build",
+  "devCommand": "npm run dev",
+  "installCommand": "npm install",
+  "functions": {
+    "api/**/*.ts": {
+      "memory": 1024,
+      "maxDuration": 10
+    }
+  }
 }
