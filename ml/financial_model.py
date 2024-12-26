@@ -4,14 +4,10 @@ import numpy as np
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.preprocessing import StandardScaler
 import openai
-from dotenv import load_dotenv
 import os
 
-# Load environment variables
-load_dotenv()
-
-# Initialize OpenAI with API key from .env
-openai.api_key = os.getenv('OPENAI_API_KEY')
+# Initialize OpenAI with API key directly from environment
+openai.api_key = os.environ.get('OPENAI_API_KEY')
 if not openai.api_key:
     print("Warning: OpenAI API key not found in environment variables", file=sys.stderr)
 

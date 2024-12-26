@@ -1,0 +1,10 @@
+{
+  "functions": {
+    "api/getAdvice.ts": {
+      "runtime": "nodejs18.x"
+    }
+  },
+  "buildCommand": "pip install -r requirements.txt && npm run build",
+  "installCommand": "npm install",
+  "framework": "nextjs"
+}
