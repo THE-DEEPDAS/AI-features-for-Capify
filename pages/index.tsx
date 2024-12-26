@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useRouter } from "next/router";
 import React from "react";
 import styles from "../styles/Home.module.css";
+import { getBaseUrl, routes } from '../utils/config';
 
 export default function Home() {
   const router = useRouter();
@@ -105,7 +106,8 @@ export default function Home() {
     setError("");
 
     try {
-      const response = await fetch("/api/getAdvice", {
+      const baseUrl = getBaseUrl();
+      const response = await fetch(`${baseUrl}${routes.api.getAdvice}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -130,7 +132,7 @@ export default function Home() {
       }
 
       sessionStorage.setItem('financialAdvice', JSON.stringify(result.advice));
-      router.push('/results');
+      router.push(routes.results);
     } catch (error) {
       setError("Failed to get advice. Please try again.");
       console.error("Error:", error);

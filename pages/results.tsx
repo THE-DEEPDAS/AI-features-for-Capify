@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import styles from '../styles/Results.module.css';
+import { routes } from '../utils/config';
 
 export default function Results() {
   const router = useRouter();
@@ -86,7 +87,7 @@ export default function Results() {
       <button 
         onClick={() => {
           sessionStorage.clear();
-          router.push('/');
+          router.push(routes.home);
         }} 
         className={styles.resetButton}
       >
