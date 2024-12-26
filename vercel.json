@@ -4,7 +4,11 @@
       "runtime": "nodejs18.x"
     }
   },
-  "buildCommand": "pip install -r requirements.txt && npm run build",
+  "buildCommand": "pip install -r requirements.txt --target pythonenv && npm run build",
   "installCommand": "npm install",
-  "framework": "nextjs"
+  "framework": "nextjs",
+  "outputDirectory": ".next",
+  "env": {
+    "PYTHONPATH": "pythonenv"
+  }
 }

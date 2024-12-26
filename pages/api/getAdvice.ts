@@ -15,7 +15,7 @@ export default async function handler(
     
     const options = {
       mode: "text" as "text",
-      pythonPath: 'python',
+      pythonPath: process.env.VERCEL ? 'python3' : 'python',
       pythonOptions: ['-u'],
       scriptPath: path.join(process.cwd(), 'ml'),
       args: [JSON.stringify(userData)]

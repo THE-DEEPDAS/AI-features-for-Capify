@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "python -m pip install -r requirements.txt --target pythonenv && next build",
     "start": "next start"
   },
   "dependencies": {
