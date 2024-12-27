@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { PythonShell, Options } from 'python-shell';
 import path from 'path';
 
-export const runtime = 'nodejs';
+export const runtime = 'edge';  // Changed from 'nodejs' to 'edge'
 
 const getFallbackAdvice = (userData: any) => {
   return [
