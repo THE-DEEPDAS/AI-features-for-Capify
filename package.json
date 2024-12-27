@@ -6,15 +6,13 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "vercel-build": "pip3 install -r requirements.txt && next build"
+    "vercel-build": "next build"
   },
   "dependencies": {
     "next": "13.5.4",
     "python-shell": "^3.0.1",
     "react": "18.2.0",
-    "react-dom": "18.2.0",
-    "dotenv": "^16.3.1",
-    "child_process": "^1.0.2"
+    "react-dom": "18.2.0"
   },
   "devDependencies": {
     "@types/node": "^20.8.2",
