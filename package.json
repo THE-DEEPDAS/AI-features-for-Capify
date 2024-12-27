@@ -3,16 +3,17 @@
   "version": "1.0.0",
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "pip3 install -r requirements.txt && next build",
     "start": "next start",
     "lint": "next lint"
   },
   "dependencies": {
     "next": "13.5.4",
-    "python-shell": "^5.0.0",
+    "python-shell": "^3.0.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "dotenv": "^16.3.1"
+    "dotenv": "^16.3.1",
+    "child_process": "^1.0.2"
   },
   "devDependencies": {
     "@types/node": "^20.8.2",
