@@ -2,16 +2,24 @@
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
-  pageExtensions: ['tsx', 'ts', 'jsx', 'js'],
-  async redirects() {
+  experimental: {
+    serverComponentsExternalPackages: ['python-shell'],
+    appDir: true
+  },
+  webpack: (config, { isServer }) => {
+    if (isServer) {
+      config.externals.push('python-shell');
+    }
+    return config;
+  },
+  async rewrites() {
     return [
       {
-        source: '/results',
-        destination: '/results',
-        permanent: true,
-      },
-    ];
-  },
+        source: '/api/:path*',
+        destination: '/app/api/:path*'
+      }
+    ]
+  }
 }
 
 module.exports = nextConfig

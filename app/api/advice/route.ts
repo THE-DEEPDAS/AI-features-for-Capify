@@ -2,8 +2,16 @@ import { NextResponse } from 'next/server';
 import { PythonShell, Options } from 'python-shell';
 import path from 'path';
 
+export const runtime = 'nodejs';
+
 const getFallbackAdvice = (userData: any) => {
-  // ...existing code...
+  return [
+    "Build an emergency fund",
+    `Save ${Math.round(userData.income * 0.2)} monthly`,
+    "Review your expenses",
+    "Create a budget",
+    "Consider financial planning"
+  ];
 };
 
 export async function POST(request: Request) {

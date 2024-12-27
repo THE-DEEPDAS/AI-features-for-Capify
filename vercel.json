@@ -1,11 +1,12 @@
 {
   "version": 2,
-  "buildCommand": "npm run vercel-build",
-  "framework": "nextjs",
   "functions": {
-    "api/getAdvice.ts": {
-      "memory": 128,
-      "maxDuration": 5
+    "app/api/**/*": {
+      "runtime": "nodejs18.x"
     }
-  }
+  },
+  "buildCommand": "next build",
+  "devCommand": "next dev",
+  "installCommand": "npm install",
+  "framework": "nextjs"
 }

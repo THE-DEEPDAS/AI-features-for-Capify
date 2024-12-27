@@ -17,6 +17,6 @@ export const routes: Routes = {
   home: '/',
   results: '/results',
   api: {
-    getAdvice: '/api/advice',
-  },
+    getAdvice: '/api/advice'
+  }
 };
