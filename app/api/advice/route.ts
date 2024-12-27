@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
 import { PythonShell, Options } from 'python-shell';
-import path from 'path';
+import { join } from 'path';
 
-export const runtime = 'edge';  // Changed from 'nodejs' to 'edge'
+export const runtime = 'nodejs';  // Changed back to nodejs
 
 const getFallbackAdvice = (userData: any) => {
   return [
@@ -22,7 +22,7 @@ export async function POST(request: Request) {
       mode: "text",
       pythonPath: 'python3',
       pythonOptions: ['-u'],
-      scriptPath: path.join(process.cwd(), 'ml'),
+      scriptPath: join(process.cwd(), 'ml'),
       args: [JSON.stringify(userData)]
     };
 
