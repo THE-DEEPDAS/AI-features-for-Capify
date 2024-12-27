@@ -12,7 +12,7 @@ if not openai.api_key:
     print("Warning: OpenAI API key not found in environment variables", file=sys.stderr)
 
 # Generate synthetic training data
-def generate_training_data(n_samples=1000):
+def generate_training_data(n_samples=500):  # Reduced sample size
     np.random.seed(42)
     X = np.random.rand(n_samples, 7)  # 7 features
     X[:, 0] *= 80  # age: 0-80
@@ -70,58 +70,6 @@ def generate_basic_advice(prediction, user_data):
     }
     return advice_map[prediction]
 
-def generate_dynamic_advice(user_data, prediction, model_confidence):
-    try:
-        # First get basic advice
-        basic_advice = generate_basic_advice(prediction, user_data)
-        
-        # If OpenAI is not configured or fails, return basic advice
-        if not openai.api_key or openai.api_key == 'your-api-key-here':
-            return basic_advice
-            
-        # Create a detailed prompt for GPT
-        financial_status = ["good", "concerning due to high debt", "concerning due to high expenses", "moderate"][int(prediction)]
-        
-        prompt = f"""
-        As a financial advisor, generate personalized financial advice for someone with the following profile:
-        - Age: {user_data['age']}
-        - Monthly Income: ${user_data['income']}
-        - Total Savings: ${user_data['savings']}
-        - Total Debt: ${user_data['debt']}
-        - Monthly Expenses: ${user_data['expenses']}
-        - Risk Tolerance: {user_data['investmentRisk']}/10
-        - Number of Dependents: {user_data['dependents']}
-
-        Their financial health is {financial_status}.
-        
-        Provide 3 specific, actionable pieces of financial advice tailored to their situation.
-        Focus on practical steps they can take to improve their financial well-being.
-        """
-
-        try:
-            response = openai.ChatCompletion.create(
-                model="gpt-3.5-turbo",
-                messages=[
-                    {"role": "system", "content": "You are a professional financial advisor providing specific, personalized advice."},
-                    {"role": "user", "content": prompt}
-                ],
-                temperature=0.7,
-                max_tokens=500
-            )
-            
-            # Parse the response and split into list of advice
-            advice = response.choices[0].message.content.strip().split('\n')
-            # Filter out empty strings and clean up numbering
-            advice = [a.strip().lstrip('123.-) ') for a in advice if a.strip()]
-            return advice[:3]  # Return top 3 pieces of advice
-            
-        except Exception as e:
-            # Fallback to basic advice if API fails
-            return generate_basic_advice(prediction, user_data)
-    except Exception as e:
-        print(f"Error in dynamic advice: {e}", file=sys.stderr)
-        return generate_basic_advice(prediction, user_data)
-
 def validate_input(user_data):
     required_fields = ['age', 'income', 'savings', 'debt', 'expenses', 'investmentRisk', 'dependents']
     for field in required_fields:
@@ -136,45 +84,29 @@ def validate_input(user_data):
 
 def main():
     try:
-        # Get and validate user data
         user_data = json.loads(sys.argv[1])
-        validate_input(user_data)
         
-        # Prepare user input
-        user_input = np.array([[
-            float(user_data['age']),
-            float(user_data['income']),
-            float(user_data['savings']),
-            float(user_data['debt']),
-            float(user_data['expenses']),
-            float(user_data['investmentRisk']),
-            float(user_data['dependents'])
-        ]])
+        # Simplified validation
+        required_fields = ['age', 'income', 'savings', 'debt', 'expenses', 'investmentRisk', 'dependents']
+        if not all(field in user_data and str(user_data[field]).strip() for field in required_fields):
+            raise ValueError("Missing required fields")
+
+        user_input = np.array([[float(user_data[field]) for field in required_fields]])
         
-        # Generate and prepare training data
         X_train, y_train = generate_training_data()
+        model = RandomForestClassifier(n_estimators=50, max_depth=10)  # Reduced complexity
         scaler = StandardScaler()
-        X_train_scaled = scaler.fit_transform(X_train)
         
-        # Train the model
-        model = RandomForestClassifier(n_estimators=100, random_state=42)
+        X_train_scaled = scaler.fit_transform(X_train)
         model.fit(X_train_scaled, y_train)
         
-        # Make prediction
-        user_input_scaled = scaler.transform(user_input)
-        prediction = model.predict(user_input_scaled)[0]
-        probabilities = model.predict_proba(user_input_scaled)[0]
-        confidence = np.max(probabilities)
+        prediction = model.predict(scaler.transform(user_input))[0]
         
-        # Generate dynamic advice
-        advice = generate_dynamic_advice(user_data, prediction, confidence)
+        advice = generate_basic_advice(prediction, user_data)  # Remove dynamic advice for now
         print(json.dumps(advice))
         
     except Exception as e:
-        print(json.dumps({
-            "error": str(e),
-            "status": "error"
-        }))
+        print(json.dumps(["Error generating advice. Please try again."]))
         sys.exit(1)
 
 if __name__ == "__main__":
