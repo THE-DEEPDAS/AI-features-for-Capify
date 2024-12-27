@@ -3,9 +3,10 @@
   "version": "1.0.0",
   "scripts": {
     "dev": "next dev",
-    "build": "pip3 install -r requirements.txt && next build",
+    "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "vercel-build": "pip3 install -r requirements.txt && next build"
   },
   "dependencies": {
     "next": "13.5.4",

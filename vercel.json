@@ -1,18 +1,12 @@
 {
   "version": 2,
-  "builds": [
-    {
-      "src": "package.json",
-      "use": "@vercel/next"
-    }
-  ],
+  "buildCommand": "npm run build",
+  "installCommand": "npm install",
+  "framework": "nextjs",
   "functions": {
     "api/**/*": {
-      "memory": 1024,
-      "maxDuration": 10
+      "memory": 3008,
+      "maxDuration": 30
     }
-  },
-  "env": {
-    "PYTHON_VERSION": "3.9"
   }
 }
