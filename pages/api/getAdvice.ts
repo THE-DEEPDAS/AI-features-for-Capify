@@ -62,7 +62,9 @@ export default async function handler(
         fallback: true
       });
     }
+
     /* good */
+    
   } catch (error) {
     console.error('Error:', error);
     return res.status(500).json({ 
