@@ -1,34 +1,44 @@
 .container {
-  max-width: 1200px;
-  margin: 0 auto;
+  width: 100%;
+  min-height: 100vh;
+  margin: 0;
   padding: 2rem;
   text-align: center;
-  min-height: 100vh;
-  background: #1a1a1a;
+  background: #0a0a0a;
   color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .adviceGrid {
+  width: 100%;
+  max-width: 1400px;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 2rem;
-  margin: 3rem 0;
+  grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+  gap: 2.5rem;
+  margin: 4rem auto;
+  padding: 0 2rem;
 }
 
 .adviceCard {
-  background: #2a2a2a;
-  padding: 2rem;
-  border-radius: 15px;
+  background: rgba(26, 26, 26, 0.8);
+  padding: 2.5rem;
+  border-radius: 20px;
   cursor: pointer;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  height: 200px;
+  transition: all 0.4s ease;
+  height: 250px;
   perspective: 1000px;
   position: relative;
+  border: 1px solid rgba(138, 75, 255, 0.2);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 32px rgba(138, 75, 255, 0.1);
 }
 
 .adviceCard:hover {
   transform: translateY(-5px);
-  box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+  border-color: rgba(138, 75, 255, 0.5);
+  box-shadow: 0 15px 40px rgba(138, 75, 255, 0.2);
 }
 
 .cardFront {
@@ -37,7 +47,7 @@
   justify-content: center;
   align-items: center;
   height: 100%;
-  background: linear-gradient(135deg, #0070f3, #00a8ff);
+  background: linear-gradient(135deg, #8a4bff, #6f42c1);
   border-radius: 12px;
   transition: opacity 0.3s ease;
 }
@@ -46,11 +56,26 @@
   animation: flipIn 0.6s ease-out forwards;
 }
 
+.adviceCard h3 {
+  color: #8a4bff;
+  font-size: 1.8rem;
+  margin-bottom: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.adviceCard p {
+  font-size: 1.2rem;
+  line-height: 1.7;
+  color: #ffffff;
+  margin-top: 1rem;
+}
+
 .loader {
   width: 50px;
   height: 50px;
-  border: 5px solid #f3f3f3;
-  border-top: 5px solid #0070f3;
+  border: 5px solid #1a1a1a;
+  border-top: 5px solid #8a4bff;
   border-radius: 50%;
   margin: 2rem auto;
   animation: spin 1s linear infinite;
@@ -73,17 +98,22 @@
 }
 
 .resetButton {
-  background: #0070f3;
+  background: linear-gradient(135deg, #8a4bff, #6f42c1);
   color: white;
   border: none;
-  padding: 1rem 2rem;
-  border-radius: 8px;
-  font-size: 1.1rem;
+  padding: 1.2rem 3rem;
+  border-radius: 12px;
+  font-size: 1.2rem;
   cursor: pointer;
-  transition: background 0.2s ease;
-  margin-top: 2rem;
+  transition: all 0.3s ease;
+  margin-top: 3rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
 }
 
 .resetButton:hover {
-  background: #0051b3;
+  background: linear-gradient(135deg, #9d6fff, #8049e1);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(138, 75, 255, 0.3);
 }
